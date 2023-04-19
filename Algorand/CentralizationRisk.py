@@ -138,16 +138,6 @@ class MetinTester(AbstractDetector):  # pylint: disable=too-few-public-methods
                             controledAssetTranfers.append(at)
                     # print centralization risks in blocks that do not branch
                     print("Block: " + str(bb.idx) + " has a centralization risk because we found an access control pattern on line " + str(bbAccessControlLines[bbIndex]) + " which restricts access to asset trasfer functions on lines " + str(controledAssetTranfers))
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
                 elif len(bb.next) == 2:
                     # bnz -> branch to TARGET if value A is not zero
                     # bz -> branch to TARGET if value A is zero
