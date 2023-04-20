@@ -80,7 +80,7 @@ class FreezingAssets(AbstractDetector):  # pylint: disable=too-few-public-method
                                 txn Amount
                                 app_global_put
                                 """
-                                print("txn amount is stored directly")
+                                # print("txn amount is stored directly")
                                 depositBbs.append(bb)
                             else:
                                 """
@@ -93,17 +93,18 @@ class FreezingAssets(AbstractDetector):  # pylint: disable=too-few-public-method
                                 """
                                 if detect_arithmetic_operation(currentInstructions[index + 1]) and "app_global_put" == str(currentInstructions[index + 2]) or "app_local_put" == str(currentInstructions[index + 2]):
                                     # index+1 is arithemtic operation and index+2 is storgae write if first element on stack is either constand or storage read
-                                    print("txn amount is used as a second element of an arithemtic operatioon and then stored")
+                                    # print("txn amount is used as a second element of an arithemtic operatioon and then stored")
                                     depositBbs.append(bb)
                                 elif (detect_arithmetic_operation(currentInstructions[index + 2]) and "app_global_put" == str(currentInstructions[index + 3]) or "app_local_put" == str(currentInstructions[index + 3])) or (detect_arithmetic_operation(currentInstructions[index + 3]) and "app_global_put" == str(currentInstructions[index + 4]) or "app_local_put" == str(currentInstructions[index + 4])):
                                     # if txn is used as teh first element of an arithemic calculation and the stored
-                                    print("txn amount is used as the first element of an arithemtic operatioon and then stored")
+                                    # print("txn amount is used as the first element of an arithemtic operatioon and then stored")
                                     depositBbs.append(bb)
-                                else:
-                                    print("txn Amount is not stored in the storage of the smart contract")
+                                #else:
+                                    #print("txn Amount is not stored in the storage of the smart contract")
                         index += 1
-            else:
-                print("There is no centralization risk because the user cannot depoit any funds to the smart contract")
+            #else:
+                # There is no freezing asset vulnerability the user cannot depoit any funds to the smart contract
+            return depositBbs
 
         def detect_arithmetic_operation(instruction) -> bool:
             if str(instruction) in ["+", "-", "/", "*", "%"]: # arithmetic operation opcodes from: https://developer.algorand.org/docs/get-details/dapps/avm/teal/opcodes/#mulw
@@ -111,12 +112,9 @@ class FreezingAssets(AbstractDetector):  # pylint: disable=too-few-public-method
             else:
                 return False
 
-        def detect_asset_transfer() -> List[BasicBlock]:
+        def detect_asset_transfer_bbs() -> List[BasicBlock]:
             bbs = tealProgram.bbs
             bbContainingWithdraw = []
-
-
-            ############## start edit here ##############
             for bb in bbs:
                 bbInnerTransactions = []
                 if len(bb.next) == 1:
@@ -151,21 +149,22 @@ class FreezingAssets(AbstractDetector):  # pylint: disable=too-few-public-method
                             bbInnerTransactions.append(innerTrans)
                         index += 1
                     # bbInnerTransactions represents all inner transactions contained in basic blocks that contain an access control mechanism within the same basicblock
-                    innerTransAssetTrans = []
                     for innerTrans in bbInnerTransactions: # innerTrans is an array that contains all operations for an inner transaction
                         # check if inner transaction is an asset transfer
                         innerTransactionIndex = 0
                         while innerTransactionIndex < len(innerTrans): # iterate through the instructions of the inner transaction
                             if "itxn_field TypeEnum" == str(innerTrans[innerTransactionIndex]) and "int axfer" == str(innerTrans[innerTransactionIndex - 1]):
-                                innerTransAssetTrans.append(innerTrans[0].line)
+                                if bb not in bbContainingWithdraw:
+                                    bbContainingWithdraw.append(bb)
                             innerTransactionIndex += 1
-            ############## end edit here ##############
             return bbContainingWithdraw
 
         def detect_freezing_asset():
             txnAmountBbs = detect_txn_amount()
             depositFunctionBBs = detect_deposit(txnAmountBbs)
-            withdrawFunctions = detect_asset_transfer()
+            withdrawFunctions = detect_asset_transfer_bbs()
+            print("depositFunctionBBs: " + str(depositFunctionBBs))
+            print("withdrawFunctions: " + str(withdrawFunctions))
             if depositFunctionBBs and not withdrawFunctions:
                 print("detected freezing asset vulnerability because user can deposit funds but not withdraw")
             else:
