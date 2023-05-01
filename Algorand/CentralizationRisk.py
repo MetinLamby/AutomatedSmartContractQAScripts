@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from tealer.teal.context.block_transaction_context import BlockTransactionContext
 
 
-class MetinTester(AbstractDetector):  # pylint: disable=too-few-public-methods
+class CentralizationRiskDetector(AbstractDetector):  # pylint: disable=too-few-public-methods
     """Detector to find execution paths missing DeleteApplication check.
 
     Stateful smart contracts(application) can be deleted in algorand. If the
@@ -45,168 +45,108 @@ class MetinTester(AbstractDetector):  # pylint: disable=too-few-public-methods
     WIKI_DESCRIPTION = (
         "Smart contract that includes restriucted functions that have balance modifying behaviour"
     )
-    WIKI_EXPLOIT_SCENARIO = "test"
+    WIKI_EXPLOIT_SCENARIO = "There is restricted access to an internal transaction that is an asset transfer"
 
-    WIKI_RECOMMENDATION = "test"
+    WIKI_RECOMMENDATION = "Be aware of private key compromised because they could lead to privacy issues in smart contracts where the owners key is compromised"
 
     def detect(self) -> "SupportedOutput":
-        
+
         tealProgram = self.teal
-        
+
         ###### use the print() statements if you want to output things ######
-        
+
         print("############################ My output #################################")
-        
-        def bb_with_address_similarity_condition() -> List[BasicBlock]:
-            instructions = tealProgram.instructions
+
+        def bb_with_address_similarity_condition():
+            basicBlocks = tealProgram.bbs
             addressComparisonBlocks = []
+            addressComparisonLines = []
             addressComparisonIndex = []
+            currentInstrcutions = []
             """
             byte "Creator"
             app_global_get
             txn Sender
             ==
             """
-            # or 
+            # or
             """
             txn Sender
             byte "Creator"
             app_global_get
             ==
             """
-            index = 0
-            #print(instructions)
-            while index < len(instructions):
-                if "txn Sender" == str(instructions[index]) and "==" == str(instructions[index + 1]) and "app_global_get" == str(instructions[index - 1]) and "byte " in str(instructions[index - 2]):
-                    addressComparisonBlocks.append(instructions[index].bb)
-                    addressComparisonIndex.append(instructions[index + 1].line)
-                elif "txn Sender" == str(instructions[index]) and "byte " in str(instructions[index + 1]) and "app_global_get" == str(instructions[index + 2]) and "==" == str(instructions[index + 3]):
-                    addressComparisonBlocks.append(instructions[index].bb)
-                    addressComparisonIndex.append(instructions[index + 3].line)
-                index += 1
-            return addressComparisonBlocks, addressComparisonIndex
-        
-        def bb_analysis(bbs:List[BasicBlock], accessControlLines:List):
-            bbAccessControlLines = accessControlLines
-            bbIndex = 0
-            for bb in bbs:
-                bbInnerTransactions = []
-                if len(bb.next) == 1:
-                    currentInstructions = bb.instructions
-                    # if there is an access control pattern and there is only one next block, the pattern is implemented with assert 
-                    index = 0
-                    while index < len(currentInstructions):
-                        """
-                        itxn_begin
-                        int axfer            -> if itxn_field == axfer we have an asset tranfer function (https://developer.algorand.org/docs/get-details/dapps/avm/teal/specification/?from_query=typeenum#operations)
-                        itxn_field TypeEnum
-                        byte "pool_address"
-                        app_global_get
-                        itxn_field AssetReceiver
-                        load 0
-                        itxn_field AssetAmount
-                        byte "stable_token"
-                        app_global_get
-                        itxn_field XferAsset
-                        global CurrentApplicationAddress
-                        itxn_field Sender
-                        itxn_submit
-                        """
-                        if "itxn_begin" == str(currentInstructions[index]):
-                            innerTrans = []
-                            indexInnerTrans = index
-                            # create an array that includes all stack operations for an inner transactions
-                            while "itxn_submit" != str(currentInstructions[indexInnerTrans]):
-                                innerTrans.append(currentInstructions[indexInnerTrans])
-                                indexInnerTrans += 1
-                            innerTrans.append(currentInstructions[indexInnerTrans])
-                            bbInnerTransactions.append(innerTrans) 
-                        index += 1
-                    # bbInnerTransactions represents all inner transactions contained in basic blocks that contain an access control mechanism within the same basicblock 
-                    innerTransAssetTrans = []
-                    for innerTrans in bbInnerTransactions: # innerTrans is an array that contains all operations for an inner transaction
-                        # check if inner transaction is an asset transfer
-                        innerTransactionIndex = 0
-                        while innerTransactionIndex < len(innerTrans): # iterate through the instructions of the inner transaction
-                            if "itxn_field TypeEnum" == str(innerTrans[innerTransactionIndex]) and "int axfer" == str(innerTrans[innerTransactionIndex - 1]):
-                                innerTransAssetTrans.append(innerTrans[0].line)
-                            innerTransactionIndex += 1
-                    # make sure that access control pattern is in front of asset tranfer functions
-                    controledAssetTranfers = []
-                    for at in innerTransAssetTrans:
-                        if bbAccessControlLines[bbIndex] < at:
-                            controledAssetTranfers.append(at)
-                    # print centralization risks in blocks that do not branch
-                    print("Block: " + str(bb.idx) + " has a centralization risk because we found an access control pattern on line " + str(bbAccessControlLines[bbIndex]) + " which restricts access to asset trasfer functions on lines " + str(controledAssetTranfers))
-                elif len(bb.next) == 2:
-                    # bnz -> branch to TARGET if value A is not zero
-                    # bz -> branch to TARGET if value A is zero
-                    if "bz " in str(bb.exit_instr):
-                        for bbn in bb.next:
-                            if str(bbn.entry_instr)[-1] != ":":
-                                # look for innertansaction with TypeEnum == axfer in bbn.instructions
-                                currentInstructions = bbn.instructions
-                                index = 0
-                                while index < len(currentInstructions):
-                                    if "itxn_begin" == str(currentInstructions[index]):
-                                        innerTrans = []
-                                        indexInnerTrans = index
-                                        # create an array that includes all stack operations for an inner transactions
-                                        while "itxn_submit" != str(currentInstructions[indexInnerTrans]):
-                                            innerTrans.append(currentInstructions[indexInnerTrans])
-                                            indexInnerTrans += 1
-                                        innerTrans.append(currentInstructions[indexInnerTrans])
-                                        bbInnerTransactions.append(innerTrans) 
-                                    index += 1
-                                # bbInnerTransactions represents all inner transactions contained in basic blocks that contain an access control mechanism within the same basicblock 
-                                innerTransAssetTrans = []
-                                for innerTrans in bbInnerTransactions: # innerTrans is an array that contains all operations for an inner transaction
-                                    # check if inner transaction is an asset transfer
-                                    innerTransactionIndex = 0
-                                    while innerTransactionIndex < len(innerTrans): # iterate through the instructions of the inner transaction
-                                        if "itxn_field TypeEnum" == str(innerTrans[innerTransactionIndex]) and "int axfer" == str(innerTrans[innerTransactionIndex - 1]):
-                                            innerTransAssetTrans.append(innerTrans[0].line)
-                                        innerTransactionIndex += 1
-                                # in a branching pattern we do not need to check for order of patterns because branch is always later
-                                if innerTransAssetTrans:
-                                    # print centralization risks in blocks that do not branch
-                                    print("Blocks " + str(bb.idx) + " and " + str(bbn.idx) + " have a centralization risk because we found an access control pattern on line " + str(bbAccessControlLines[bbIndex]) + " which restricts access to asset trasfer functions on lines " + str(innerTransAssetTrans))      
-                    elif "bnz " in str(bb.exit_instr):
-                        for bbn in bb.next:
-                            if str(bbn.entry_instr)[-1] == ":":
-                                # look for innertansaction with TypeEnum == axfer in bbn.instructions
-                                currentInstructions = bbn.instructions
-                                index = 0
-                                while index < len(currentInstructions):
-                                    if "itxn_begin" == str(currentInstructions[index]):
-                                        innerTrans = []
-                                        indexInnerTrans = index
-                                        # create an array that includes all stack operations for an inner transactions
-                                        while "itxn_submit" != str(currentInstructions[indexInnerTrans]):
-                                            innerTrans.append(currentInstructions[indexInnerTrans])
-                                            indexInnerTrans += 1
-                                        innerTrans.append(currentInstructions[indexInnerTrans])
-                                        bbInnerTransactions.append(innerTrans) 
-                                    index += 1
-                                # bbInnerTransactions represents all inner transactions contained in basic blocks that contain an access control mechanism within the same basicblock 
-                                innerTransAssetTrans = []
-                                for innerTrans in bbInnerTransactions: # innerTrans is an array that contains all operations for an inner transaction
-                                    # check if inner transaction is an asset transfer
-                                    innerTransactionIndex = 0
-                                    while innerTransactionIndex < len(innerTrans): # iterate through the instructions of the inner transaction
-                                        if "itxn_field TypeEnum" == str(innerTrans[innerTransactionIndex]) and "int axfer" == str(innerTrans[innerTransactionIndex - 1]):
-                                            innerTransAssetTrans.append(innerTrans[0].line)
-                                        innerTransactionIndex += 1
-                                # in a branching pattern we do not need to check for order of patterns because branch is always later
-                                if innerTransAssetTrans:
-                                    # print centralization risks in blocks that do not branch
-                                    print("Blocks " + str(bb.idx) + " and " + str(bbn.idx) + " have a centralization risk because we found an access control pattern on line " + str(bbAccessControlLines[bbIndex]) + " which restricts access to asset trasfer functions on lines " + str(innerTransAssetTrans))
-                bbIndex += 1            
-        bbs, indexs = bb_with_address_similarity_condition()
-        bb_analysis(bbs, indexs)
-        
+            for bb in basicBlocks:
+                currentInstrcutions = bb.instructions
+                index = 0
+                while index < len(currentInstrcutions):
+                    if "txn Sender" == str(currentInstrcutions[index]) and "==" == str(currentInstrcutions[index + 1]) and "app_global_get" == str(currentInstrcutions[index - 1]) and "byte " in str(currentInstrcutions[index - 2]):
+                        addressComparisonBlocks.append(bb)
+                        addressComparisonLines.append(currentInstrcutions[index + 1].line)
+                        addressComparisonIndex.append(index + 1)
+                    elif "txn Sender" == str(currentInstrcutions[index]) and "byte " in str(currentInstrcutions[index + 1]) and "app_global_get" == str(currentInstrcutions[index + 2]) and "==" == str(currentInstrcutions[index + 3]):
+                        addressComparisonBlocks.append(bb)
+                        addressComparisonLines.append(currentInstrcutions[index + 3].line)
+                        addressComparisonIndex.append(index + 3)
+                    index += 1
+            return addressComparisonBlocks, addressComparisonLines, addressComparisonIndex
+
+        # order of expressions
+        # address comparison
+        # assert or branch
+        # logal storage write
+
+        def bb_with_assert_or_branch(bbs:List[BasicBlock], accessControlLines:List, accessControlIndices:List):
+            vulnerableBB = []
+            vulnerableBBLocalPutLines = []
+            if len(bbs) == len(accessControlLines) == len(accessControlIndices):
+                currentInstrcutions = []
+                bbIndex = 0
+                while bbIndex < len(bbs):
+                    currentInstrcutions = bbs[bbIndex].instructions[accessControlIndices[bbIndex]+1:] # we analyze all instrcutions of a basic block after the final expression required for address comparison
+                    currentInstrcutionIndex = 0
+                    if len(bbs[bbIndex].next) == 1 or len(bbs[bbIndex].next) == 0: # having one or zero next bbs indicates no branch
+                        #if "assert" == str(currentInstrcutions[currentInstrcutionIndex]):
+                        while currentInstrcutionIndex < len(currentInstrcutions):
+                            if "assert" == str(currentInstrcutions[currentInstrcutionIndex]):
+                                currentInstrcutions = currentInstrcutions[currentInstrcutionIndex+1:]
+                                break
+                            currentInstrcutionIndex += 1
+                        for i in currentInstrcutions:
+                            if "app_local_put" == str(i):
+                                vulnerableBB.append(bbs[bbIndex])
+                                vulnerableBBLocalPutLines.append(i.line)
+                    elif len(bbs[bbIndex].next) == 2: # having two next bbs indicates a branch
+                        # bnz -> branch to TARGET if value A is not zero
+                        # bz -> branch to TARGET if value A is zero
+                        if "bz " in str(bbs[bbIndex].exit_instr):
+                            for bbn in bbs[bbIndex].next:
+                                if str(bbn.entry_instr)[-1] != ":":
+                                    currentInstructions = bbn.instructions
+                                    for i in currentInstructions:
+                                        if "app_local_put" == str(i):
+                                            vulnerableBB.append(bbn)
+                                            vulnerableBBLocalPutLines.append(i.line)
+                        elif "bnz " in str(bbs[bbIndex].exit_instr):
+                            for bbn in bbs[bbIndex].next:
+                                if str(bbn.entry_instr)[-1] == ":":
+                                    currentInstructions = bbn.instructions
+                                    for i in currentInstructions:
+                                        if "app_local_put" == str(i):
+                                            vulnerableBB.append(bbn)
+                                            vulnerableBBLocalPutLines.append(i.line)
+                    bbIndex += 1
+            return vulnerableBB, vulnerableBBLocalPutLines
+
+        bbs, lines, indices = bb_with_address_similarity_condition()
+        vulnerableBBs, vulnerableBBLocalPutLinesList = bb_with_assert_or_branch(bbs, lines, indices)
+        index = 0
+        while index < len(vulnerableBBs):
+            print("we detected a centralization risk in basic block with id " + str(vulnerableBBs[index].idx) + " because the basic block contains an address comparison with a branch or assert opcode that restricts access to a app_local_put instrcution on line " + str(vulnerableBBLocalPutLinesList[index]))
+            index += 1
+
         ###### Leave the below code for correct output ########
-        
+
         print("############################ Default output ############################")
 
         def checks_field(block_ctx: "BlockTransactionContext") -> bool:
