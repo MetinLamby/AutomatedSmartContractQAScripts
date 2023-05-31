@@ -1,0 +1,105 @@
+#pragma version 6
+txn NumAppArgs
+int 0
+==
+bnz main_l6
+txna ApplicationArgs 0
+method "increment()void"
+==
+bnz main_l5
+txna ApplicationArgs 0
+method "decrement()void"
+==
+bnz main_l4
+err
+main_l4:
+txn OnCompletion
+int NoOp
+==
+txn ApplicationID
+int 0
+!=
+&&
+assert
+callsub decrement_1
+int 1
+return
+main_l5:
+txn OnCompletion
+int NoOp
+==
+txn ApplicationID
+int 0
+!=
+&&
+assert
+callsub increment_0
+int 1
+return
+main_l6:
+txn OnCompletion
+int NoOp
+==
+bnz main_l12
+txn OnCompletion
+int UpdateApplication
+==
+bnz main_l11
+txn OnCompletion
+int DeleteApplication
+==
+bnz main_l10
+err
+main_l10:
+int 0
+return
+main_l11:
+int 0
+return
+main_l12:
+txn ApplicationID
+int 0
+==
+assert
+byte "Count"
+int 0
+app_global_put
+int 1
+return
+
+// increment
+increment_0:
+global GroupSize
+int 1
+==
+assert
+byte "Count"
+app_global_get
+store 0
+byte "Count"
+load 0
+int 1
++
+app_global_put
+retsub
+
+// decrement
+decrement_1:
+global GroupSize
+int 1
+==
+assert
+byte "Count"
+app_global_get
+store 1
+load 1
+int 0
+>
+bz decrement_1_l2
+byte "Count"
+load 1
+int 1
+-
+app_global_put
+decrement_1_l2:
+retsub
