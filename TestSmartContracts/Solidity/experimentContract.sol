@@ -3,19 +3,11 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-contract ExternalContract {
-    uint public number;
-    function getBlockData() public view returns(uint blockNumber) {
-        return block.number;
-    }
-}
-
 contract Experiment {
 
     mapping(address => uint256) public balances;
     address payable owner;
     address payable externalAccount;
-    ExternalContract public externalCon;
 
     constructor() {
         owner = payable(msg.sender);
@@ -88,4 +80,3 @@ contract Experiment {
 
 
 }
-

@@ -134,12 +134,21 @@ def functions_modifying_balance(contract:Contract) -> List[Function]:
     for f in all_functions:
         for n in f.nodes:
             for v in n.state_variables_written:
-                if "mapping(address => uint256)" == str(v.type) and (str(n.expression) in ["=", "+", "-", "/", "*", "%", "+=", "-=", ".add(", ".sub(", ".mul(", ".div(", ".mod("]) and f not in balance_writing_functions:
+                if "mapping(address => uint256)" == str(v.type) and check_list_elements(str(n.expression), ["=", "+", "-", "/", "*", "%", "+=", "-=", ".add(", ".sub(", ".mul(", ".div(", ".mod("]) and f not in balance_writing_functions:
                     balance_writing_functions.append(f)
     return balance_writing_functions
+
+def check_list_elements(string, elements_list):
+    for element in elements_list:
+        if element in string:
+            return True
+    return False
 
 protectedFunctions = get_protected_functions(contract)
 balanceModifyingFunctions = functions_modifying_balance(contract)
 protectedBalanceModifyingFunctions = set(protectedFunctions).intersection(balanceModifyingFunctions)
-for f in protectedBalanceModifyingFunctions:
-    print(f.name)
+if protectedBalanceModifyingFunctions:
+    for f in protectedBalanceModifyingFunctions:
+        print(f"We detected a centralization risk in function {f.name}")
+else: 
+    print("there is no centralization risk in the provided smart contract")
