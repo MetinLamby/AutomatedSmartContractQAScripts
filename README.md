@@ -1,5 +1,4 @@
-
-# Smart Contract Quality Assurance For Ethereum and Algorand
+# Quality Assurance using Static Analysis For Ethereum and Algorand Smart Contracts
 
 This project describes the automatic detection of Ethereum and Algorand smart contract vulnerabilities using static analysis. We limit the vulnerability scope by focusing on those issues that occur in both Transaction Execution Approval Language ( TEAL) and Solidity applications. The static analysis frameworks Tealer and Slither are extended to identify the existence of frozen tokens, generating randomness, denial of service, and centralization-related risks vulnerabilities.
 
