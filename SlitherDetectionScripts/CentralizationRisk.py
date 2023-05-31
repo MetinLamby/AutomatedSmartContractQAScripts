@@ -146,9 +146,11 @@ def check_list_elements(string, elements_list):
 
 protectedFunctions = get_protected_functions(contract)
 balanceModifyingFunctions = functions_modifying_balance(contract)
-protectedBalanceModifyingFunctions = set(protectedFunctions).intersection(balanceModifyingFunctions)
+protectedBalanceModifyingFunctions = set(protectedFunctions).intersection(balanceModifyingFunctions)  
 if protectedBalanceModifyingFunctions:
-    for f in protectedBalanceModifyingFunctions:
-        print(f"We detected a centralization risk in function {f.name}")
-else: 
-    print("there is no centralization risk in the provided smart contract")
+    print("We detected the ``Centralization Risk'' vulnerability in the " + contract.name + " contract.")
+    print("The vulnerable functions are: ")
+    for vf in protectedBalanceModifyingFunctions:
+        print("- " + vf.name)
+else:
+    print("There is no function that has privileged access and can modify the balance of a user")

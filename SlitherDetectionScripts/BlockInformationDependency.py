@@ -49,10 +49,10 @@ def detect_pseudoranom_number_generators_from_blockdata(all_functions:List[Funct
 all_functions = contract.functions
 vulnerable_Functions, vulnerable_Nodes = detect_pseudoranom_number_generators_from_blockdata(all_functions)
 if vulnerable_Functions:
-    print("We detected the ``Block information dependency'' vulnerability in " + contract.name + " contract.")
+    print("We detected the ``Block information dependency'' vulnerability in the " + contract.name + " contract.")
     print("The vulnerable functions are: ")
     for vf in vulnerable_Functions:
-        print(vf.name)
+        print("- " + vf.name)
 else:
     print("There is no function that can send eth that includes block data")
 

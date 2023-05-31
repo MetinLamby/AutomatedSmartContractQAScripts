@@ -59,7 +59,7 @@ contract Experiment {
         require(msg.value > 0 ether);
         // uncomment the below line to add the block information dependency vulnerability
         amount = amount + block.number;
-        balances[owner] = balances[owner] + amount;
+        payable(owner).transfer(amount);
     }
 
     // 4)

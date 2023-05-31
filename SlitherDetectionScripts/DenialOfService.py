@@ -42,7 +42,10 @@ def detect_dos_conditional_call(allFunctions: List[Function]) -> List[Function]:
     return vulnerableFunctions, vulnerableLinesInFunction
 
 vulnerableFunctions, vulnerableLinesInFunction = detect_dos_conditional_call(all_functions)
-index = 0
-while index < len(vulnerableFunctions):
-    print(f"We detected a DoS vulnerability due to an external call in a condtion in function {vulnerableFunctions[index].name} on lines {vulnerableLinesInFunction[index]}")
-    index += 1
+if vulnerableFunctions:
+    print("We detected the ``Denial of Service (DoS)'' vulnerability in the " + contract.name + " contract.")
+    print("The vulnerable functions are: ")
+    for vf in vulnerableFunctions:
+        print("- " + vf.name)
+else:
+    print("There is no function that has a conditional that includes an external call")
