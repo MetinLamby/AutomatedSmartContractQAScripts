@@ -17,37 +17,25 @@ slither = Slither(sys.argv[1])
 contract = slither.contracts[0]
 
 """
-Vulnerability name: Generating Randomness
+Vulnerability name: Block information dependency
 
-Vulnerability description: smart contracts using pseudorandom number generated from block data
-
-Vulnerabile patterns:
-
-1) blockhash()
-2) block.number
-3) block.timestamp
-4) block.coinbase
-5) block.difficulty
-
-Slither detection script pseudocode:
+Vulnerability description: smart contracts containing ETH transfer functions with a deopendency on block data which is often used as a pseudorandom number
 """
 
 def detect_pseudoranom_number_generators_from_blockdata(all_functions:List[Function]) -> List[Function]:
-    vulnerablePatterns = ["blockhash(", "block.number", "block.timestamp", "block.coinbase", "block.difficulty"]
+    vulnerablePatterns = ["blockhash(", "block.number", "block.timestamp", "block.coinbase", "block.difficulty"] # block data patterns
     vulnerableFunctions = []
-    vulnerableNodes = []
     for f in all_functions:
         for n in f.nodes:
             if isinstance(n.expression, Expression):
                 for p in vulnerablePatterns:
-                    if p in str(n.expression) and f not in vulnerableFunctions and f.can_send_eth():
+                    if p in str(n.expression) and f not in vulnerableFunctions and f.can_send_eth(): # detect functions that can send eth and includes a block data pattern
                         vulnerableFunctions.append(f)
-                        vulnerableNodes.append(n)
-    return vulnerableFunctions, vulnerableNodes
+    return vulnerableFunctions
 
 
 all_functions = contract.functions
-vulnerable_Functions, vulnerable_Nodes = detect_pseudoranom_number_generators_from_blockdata(all_functions)
+vulnerable_Functions = detect_pseudoranom_number_generators_from_blockdata(all_functions)
 if vulnerable_Functions:
     print("We detected the ``Block information dependency'' vulnerability in the " + contract.name + " contract.")
     print("The vulnerable functions are: ")

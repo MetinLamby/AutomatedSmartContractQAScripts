@@ -1,4 +1,5 @@
-"""Detector for finding execution paths missing DeleteApplication check."""
+# STATIC ANALYSIS TOOLS SHOULD NOT BE USED WHEN CONTEXT AWARENESS IS RELEVANT
+# WE ONLY DETECT BLOCK DATA DEPENDENCIES
 
 from typing import List, TYPE_CHECKING
 

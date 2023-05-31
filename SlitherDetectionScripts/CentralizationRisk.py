@@ -17,14 +17,11 @@ slither = Slither(sys.argv[1])
 contract = slither.contracts[0]
 
 """
-functions_with_centralization_modifier():
-Input: Slither Contract object
-Output: List of functions that include modifier with require and msg.sender address comparison
+Vulnerability name: Centralization risk 
 
-We iterate over all functions that include a modifier. We check whether the dected modifiers of a functions includes
-a require expression that compares two variables. One of the variables is msg.sender. The other variable must be a storage variable of type address.
-The order of the varioables within the condition can be arbitrary.
+Vulnerability description: balance modifying logic that is restricted to privileged users
 """
+
 def functions_with_centralization_modifier(contract:Contract) -> List[Function]:
     contractFunctions = contract.functions
     functionsWithModifier = []
@@ -48,15 +45,6 @@ def functions_with_centralization_modifier(contract:Contract) -> List[Function]:
                                 functionsWithModifier.append(f)
     return functionsWithModifier
 
-"""
-functions_with_centralization_require():
-Input: Slither Contract object
-Output: List of functions that include require expression and msg.sender address comparison
-
-We iterate over all functions that include a require expression that compares two variables.
-One of the variables is msg.sender. The other variable must be a storage variable of type address.
-The order of the varioables within the condition can be arbitrary.
-"""
 def functions_with_centralization_require(contract:Contract) -> List[Function]:
     all_functions = contract.functions
     protected_functions = []
@@ -79,15 +67,6 @@ def functions_with_centralization_require(contract:Contract) -> List[Function]:
                 # MISSING check if address variables in require/assert are compared for similarity
     return protected_functions
 
-"""
-functions_with_centralization_if():
-Input: Slither Contract object
-Output: List of functions that include if expression and msg.sender address comparison condition
-
-We iterate over all functions that include an if condition that compares two variables.
-One of the variables is msg.sender. The other variable must be a storage variable of type address.
-The order of the varioables within the condition can be arbitrary.
-"""
 def functions_with_centralization_if(contract:Contract) -> List[Function]:
     all_functions = contract.functions
     protected_functions = []

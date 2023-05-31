@@ -20,6 +20,12 @@ contract = slither.contracts[0]
 
 all_functions = contract.functions
 
+"""
+Vulnerability name: Denial of service
+
+Vulnerability description: contracts that contain functions with conditionals that include an external call
+"""
+
 def detect_dos_conditional_call(allFunctions: List[Function]) -> List[Function]:
     vulnerableFunctions = []
     vulnerableLinesInFunction = []
@@ -35,7 +41,7 @@ def detect_dos_conditional_call(allFunctions: List[Function]) -> List[Function]:
                     else:
                         newFunction = False
                     for call in so._node._external_calls_as_expressions: # a function cn include multiple condistionals with external calls
-                        vulnerableLines.append(str(call.source_mapping).split('#')[-1]) # add the line numbr of the source code to a list
+                        vulnerableLines.append(str(call.source_mapping).split('#')[-1]) # add the line number of the source code to a list
                         if newFunction:
                             vulnerableLinesInFunction.append(vulnerableLines)
 
