@@ -72,7 +72,7 @@ mv SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/TealerDetectionScr
 cd TealerDir/tealer 
 # register detectors in all_detectors.py file
 echo "from tealer.detectors.TealerDetectionScripts.CentralizationRisk import CentralizationRisk
-from tealer.detectors.TealerDetectionScripts.BlockInformationDependency import BlockInformationDepenecy
+from tealer.detectors.TealerDetectionScripts.BlockInformationDependency import BlockInformationDependency
 from tealer.detectors.TealerDetectionScripts.DenialOfService import DenialOfService
 from tealer.detectors.TealerDetectionScripts.FrozenTokens import FrozenAssets" >> tealer/detectors/all_detectors.py
 # !IMPORTANT: comment out line ``555 handle_output(args, results_detectors, _results_printers, error)'' in file tealer/tealer/__main__.py
