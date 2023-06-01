@@ -34,17 +34,20 @@ pip3 install solc-select
 pip3 install cbor2
 solc-select install 0.8.20
 solc-select use 0.8.20
+deactivate
 ```
 
 Move Slither Detection Scripts into Frameworks and Execute
 ```bash
+cd ../..  
 mv SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/SlitherDetectionScripts/ SlitherDir/slither/examples/scripts/
 cd SlitherDir
 source venv/bin/activate
 cd slither
 # choose the vulnerability you want to detect
-# DETECTORs are CentralizationRisk.py, BlockInformationDependency.py and DenialOfService.py
+  # DETECTORs are CentralizationRisk.py, BlockInformationDependency.py and DenialOfService.py
 python examples/scripts/SlitherDetectionScripts/<<DETECTOR>> ../../SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/TestSmartContracts/Solidity/experimentContract.sol
+deactivate
 cd ../../
 ```
 
@@ -52,7 +55,7 @@ cd ../../
 Clone Tealer Framework and Test
 ```bash
 cd TealerDir
-virtualenv --python=/usr/bin/python3 venv
+# virtualenv --python=/usr/bin/python3 venv
 git clone git@github.com:crytic/tealer.git
 # for some reason the detector scripts only work without virtual environment
 # virtualenv --python=/usr/bin/python3 venv
@@ -66,6 +69,7 @@ Move Tealer Detection Scripts into Frameworks and Execute
 
 ```bash
 mv SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/TealerDetectionScripts TealerDir/tealer/tealer/detectors/
+cd TealerDir/tealer 
 # register detectors in all_detectors.py file
 echo "from tealer.detectors.TealerDetectionScripts.CentralizationRisk import CentralizationRisk
 from tealer.detectors.TealerDetectionScripts.BlockInformationDependency import BlockInformationDepenecy
