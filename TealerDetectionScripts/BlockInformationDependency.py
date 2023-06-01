@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from tealer.teal.context.block_transaction_context import BlockTransactionContext
 
 
-class BlockInformationDepenecy(AbstractDetector):  # pylint: disable=too-few-public-methods
+class BlockInformationDependency(AbstractDetector):  # pylint: disable=too-few-public-methods
     NAME = "blockInformationDependency"
     DESCRIPTION = (
         "Applications that use block seed in the same execution path as balance modification"
