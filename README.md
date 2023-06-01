@@ -70,6 +70,7 @@ echo "from tealer.detectors.TealerDetectionScripts.CentralizationRisk import Cen
 from tealer.detectors.TealerDetectionScripts.BlockInformationDependency import BlockInformationDepenecy
 from tealer.detectors.TealerDetectionScripts.DenialOfService import DenialOfServiceDetector
 from tealer.detectors.TealerDetectionScripts.FrozenTokens import FreezingAssetsUpdated" >> tealer/detectors/all_detectors.py
+# for clear output, comment out line ``555 handle_output(args, results_detectors, _results_printers, error)'' in file tealer/tealer/__main__.py
 # choose the vulnerability you want to detect
 # DETECTORs are freezingAssetsUpdated, denialOfService, centralizationRisk and blockInformationDependency
 tealer ../../SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/TestSmartContracts/TEAL/test.teal --detect <<DETECTOR>>
