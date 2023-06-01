@@ -31,6 +31,7 @@ source venv/bin/activate
 cd slither
 python3 setup.py install
 pip3 install solc-select
+pip3 install cbor2
 solc-select install 0.8.20
 solc-select use 0.8.20
 ```
