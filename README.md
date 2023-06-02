@@ -45,7 +45,7 @@ cd SlitherDir
 source venv/bin/activate
 cd slither
 # choose the vulnerability you want to detect
-  # DETECTORs are CentralizationRisk.py, BlockInformationDependency.py and DenialOfService.py
+  # DETECTORs are CentralizationRisk.py, BlockInformationDependency.py, DenialOfService.py, DetectorSummary.py
 python examples/scripts/SlitherDetectionScripts/<<DETECTOR>> ../../SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/TestSmartContracts/Solidity/experimentContract.sol
 deactivate
 cd ../../
