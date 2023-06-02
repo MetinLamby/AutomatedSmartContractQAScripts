@@ -81,7 +81,7 @@ from tealer.detectors.TealerDetectionScripts.FrozenTokens import FrozenAssets" >
 tealer ../../SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/TestSmartContracts/TEAL/experimentContract.teal --detect <<DETECTOR>>
 ```
 ## Demo
-- [TEAL Smart Contract Static Analysis Demo](https://youtu.be/AnB4bfgr-ps)
+- [TEAL Smart Contract Static Analysis Demo](https://youtu.be/NnaqdfUmyDA)
 - [Solidity Smart Contract Static Analysis Demo](https://youtu.be/HJvL00_5r3s)
 
 ## Related
