@@ -82,7 +82,7 @@ tealer ../../SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/TestSmar
 ```
 ## Demo
 - [TEAL Smart Contract Static Analysis Demo](https://youtu.be/AnB4bfgr-ps)
-- [Solidity Smart Contract Static Analysis Demo](https://youtu.be/AnB4bfgr-ps)
+- [Solidity Smart Contract Static Analysis Demo](https://youtu.be/HJvL00_5r3s)
 
 ## Related
 
