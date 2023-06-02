@@ -159,6 +159,15 @@ def check_list_elements(string, elements_list):
     return False
 
 
+def detect_protected_balance_modifying_functions(contract: Contract):
+    protectedFunctions = get_protected_functions(contract)
+    balanceModifyingFunctions = functions_modifying_balance(contract)
+    protectedBalanceModifyingFunctions = set(protectedFunctions).intersection(
+        balanceModifyingFunctions
+    )
+    return protectedBalanceModifyingFunctions
+
+
 def main():
     # Init slither
     slither = Slither(sys.argv[1])
@@ -166,11 +175,7 @@ def main():
     # Get the contract
     contract = slither.contracts[0]
 
-    protectedFunctions = get_protected_functions(contract)
-    balanceModifyingFunctions = functions_modifying_balance(contract)
-    protectedBalanceModifyingFunctions = set(protectedFunctions).intersection(
-        balanceModifyingFunctions
-    )
+    protectedBalanceModifyingFunctions = detect_protected_balance_modifying_functions(contract)
     if protectedBalanceModifyingFunctions:
         print(
             "We detected the ``Centralization Risk'' vulnerability in the "

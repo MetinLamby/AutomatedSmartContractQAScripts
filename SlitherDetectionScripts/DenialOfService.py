@@ -34,8 +34,8 @@ def detect_dos_conditional_call(allFunctions: List[Function]) -> List[Function]:
                         so.node.external_calls_as_expressions
                     ):  # a function cn include multiple condistionals with external calls
                         vulnerableLines.append(
-                            #str(call.source_mapping).split("#")[-1]
-                            str(call.source_mapping).rsplit('#', maxsplit=1)[-1]
+                            # str(call.source_mapping).split("#")[-1]
+                            str(call.source_mapping).rsplit("#", maxsplit=1)[-1]
                         )  # add the line numbr of the source code to a list
 
     return vulnerableFunctions

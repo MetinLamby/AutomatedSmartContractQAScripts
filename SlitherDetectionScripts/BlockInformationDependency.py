@@ -31,8 +31,7 @@ def detect_pseudoranom_number_generators_from_blockdata(
                 for p in vulnerablePatterns:
                     if p in str(n.expression) and f not in vulnerableFunctions and f.can_send_eth(): # detect functions that can send eth and includes a block data pattern
                         vulnerableFunctions.append(f)
-    return vulnerableFunctions
-
+    return vulnerableFunctions    
 
 def main():
     # Init slither
