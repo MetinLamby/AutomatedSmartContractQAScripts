@@ -78,7 +78,7 @@ from tealer.detectors.TealerDetectionScripts.FrozenTokens import FrozenAssets" >
 # !IMPORTANT: comment out line ``555 handle_output(args, results_detectors, _results_printers, error)'' in file tealer/tealer/__main__.py
 # choose the vulnerability you want to detect
 # DETECTORs are frozenAssets, denialOfService, centralizationRisk and blockInformationDependency
-tealer ../../SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/TestSmartContracts/TEAL/test.teal --detect <<DETECTOR>>
+tealer ../../SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/TestSmartContracts/TEAL/experimentContract.teal --detect <<DETECTOR>>
 ```
 ## Demo
 - [TEAL Smart Contract Static Analysis Demo](https://youtu.be/AnB4bfgr-ps)
