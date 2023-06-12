@@ -2,7 +2,7 @@
 
 This project describes the automatic detection of Ethereum and Algorand smart contract vulnerabilities using static analysis. We limit the vulnerability scope by focusing on those issues that occur in both Transaction Execution Approval Language (TEAL) and Solidity applications. The static analysis frameworks Tealer and Slither are extended to identify the existence of frozen tokens, generating randomness, denial of service, and centralization risk vulnerabilities.
 
-This project is part of a Bachelor’s Thesis in Information Systems for the School of Computation, Information and Technology — Informatics at the Technische Universität München (TUM)
+This project is part of a Bachelor’s Thesis in Information Systems for the School of Computation, Information and Technology — Informatics at the Technische Universität München (TUM).
 ## Setup and Execution
 
 Setup the folder structure
