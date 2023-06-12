@@ -23,24 +23,19 @@ cd ..
 Clone the Slither framework
 ```bash
 cd SlitherDir
-virtualenv --python=/usr/bin/python3 venv # create a virtual environment
 git clone git@github.com:crytic/slither.git
-source venv/bin/activate # activate a virtual environment
 cd slither
 python3 setup.py install
 pip3 install solc-select cbor2 wcwidth
 solc-select install 0.8.20
 solc-select use 0.8.20
-deactivate # deactivate a virtual environment
 ```
 
 Move the Slither detection scripts into the framework
 ```bash
 cd ../..  
 mv SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/SlitherDetectionScripts/ SlitherDir/slither/examples/scripts/
-cd SlitherDir
-source venv/bin/activate # activate a virtual environment
-cd slither
+cd SlitherDir/slither
 ```
 
 Execute the available detectors by exchanging ```<DETECTOR>``` with one of the below detection scripts:
@@ -50,7 +45,6 @@ Execute the available detectors by exchanging ```<DETECTOR>``` with one of the b
 - DetectorSummary.py
 ```bash
 python examples/scripts/SlitherDetectionScripts/<DETECTOR> ../../SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/TestSmartContracts/Solidity/experimentContract.sol
-deactivate # deactivate a virtual environment
 cd ../../
 ```
 
