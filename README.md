@@ -80,10 +80,6 @@ Execute the available detectors by exchanging ```<DETECTOR>``` with one of the b
 tealer ../../SmartContractQAThesisFiles/AutomatedSmartContractQAScripts/TestSmartContracts/TEAL/experimentContract.teal --detect <DETECTOR>
 ```
 
-## Demo
-- [TEAL Smart Contract Static Analysis Demo](https://youtu.be/NnaqdfUmyDA)
-- [Solidity Smart Contract Static Analysis Demo](https://youtu.be/HJvL00_5r3s)
-
 ## Related
 
 The related static analysis frameworks are
